@@ -1,0 +1,12 @@
+{
+  "id": "claude",
+  "name": "Claude (Anthropic)",
+  "trust_class": "claude",
+  "domain_authorities": ["strategy", "memory-orchestration", "architecture", "writing", "analysis"],
+  "registered_skills": ["memory_context", "memory_put", "memory_get", "strategic-reasoning", "open-loop-triage", "session-briefing"],
+  "confidence_ceiling": 0.40,
+  "quorum_weight": 0.60,
+  "created_at": "2026-05-06T00:00:00.000Z",
+  "registered_by": "alex",
+  "notes": "Reads and reasons. Does not execute. Hard confidence cap enforced by the bridge."
+}
