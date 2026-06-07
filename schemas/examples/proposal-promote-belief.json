@@ -1,0 +1,95 @@
+{
+  "proposal_id": "prop_promote_nvda_fy27",
+  "proposal_type": "promote_belief",
+  "subject_ref": "belief_nvda_margin_fy27",
+  "proposition": "Promote 'NVIDIA data-center gross-margin expansion continues through FY2027' from inferred to verified.",
+  "domain": [
+    "semiconductors",
+    "equity-valuation"
+  ],
+  "proposed_by": "equity_research_agent",
+  "created_at": "2026-06-05T15:30:00Z",
+  "quorum_policy": {
+    "min_votes": 3,
+    "min_weighted_consensus": 0.6,
+    "aggregation": "weighted_consensus",
+    "authority_scoping": true
+  },
+  "votes": [
+    {
+      "voter_agent": "equity_research_agent",
+      "voter_trust_class": "model",
+      "position": "support",
+      "staked_confidence": 0.4,
+      "voter_quorum_weight": 0.8,
+      "voter_calibration_weight": 0.79,
+      "domain_relevance": 1.0,
+      "rationale": "Two consecutive prints confirm the trend."
+    },
+    {
+      "voter_agent": "risk_agent",
+      "voter_trust_class": "model",
+      "position": "oppose",
+      "staked_confidence": 0.35,
+      "voter_quorum_weight": 0.7,
+      "voter_calibration_weight": 0.72,
+      "domain_relevance": 0.8,
+      "rationale": "Forward guidance leaves room for compression."
+    },
+    {
+      "voter_agent": "macro_agent_v4",
+      "voter_trust_class": "model",
+      "position": "support",
+      "staked_confidence": 0.4,
+      "voter_quorum_weight": 0.6,
+      "voter_calibration_weight": 0.7,
+      "domain_relevance": 0.25,
+      "rationale": "Rates backdrop supportive."
+    },
+    {
+      "voter_agent": "portfolio_agent",
+      "voter_trust_class": "model",
+      "position": "support",
+      "staked_confidence": 0.3,
+      "voter_quorum_weight": 0.75,
+      "voter_calibration_weight": 0.68,
+      "domain_relevance": 0.7,
+      "rationale": "Consistent with position thesis."
+    }
+  ],
+  "status": "resolved",
+  "resolution": {
+    "resolved_at": "2026-06-05T16:00:00+00:00",
+    "outcome": "passed",
+    "weighted_consensus": 0.7401,
+    "effective_weight_formula": "quorum_weight * calibration_weight * domain_relevance * staked_confidence",
+    "quorum_met": true,
+    "total_votes": 4,
+    "support_weight": 0.4019,
+    "oppose_weight": 0.14112,
+    "tally": [
+      {
+        "voter_agent": "equity_research_agent",
+        "position": "support",
+        "effective_weight": 0.2528
+      },
+      {
+        "voter_agent": "risk_agent",
+        "position": "oppose",
+        "effective_weight": 0.14112
+      },
+      {
+        "voter_agent": "macro_agent_v4",
+        "position": "support",
+        "effective_weight": 0.042
+      },
+      {
+        "voter_agent": "portfolio_agent",
+        "position": "support",
+        "effective_weight": 0.1071
+      }
+    ],
+    "resulting_status": "verified",
+    "otel_span_id": "c3f0a1b2d4e5f6a7"
+  }
+}

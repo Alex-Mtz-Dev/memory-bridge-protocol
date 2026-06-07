@@ -59,7 +59,11 @@ Two v0.2 roadmap surfaces are already published:
 ## 7. What is still pending
 
 - The formal epistemic-status transition state machine (legal transitions and guard rules) — **v0.2**
-- The proposal/vote message schema — **v0.3**
-- A conformance test suite
+
+## 8. Delivered in v0.3
+
+- Parliament proposal/vote schema: [`schemas/Parliament.v0.3.json`](schemas/Parliament.v0.3.json)
+- Weighted quorum-resolution reference implementation: [`integrations/parliament/resolver.py`](integrations/parliament/resolver.py)
+- Conformance suite (11 tests): [`integrations/parliament/test_resolver.py`](integrations/parliament/test_resolver.py)
 
 Contributions toward any of these are welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md).

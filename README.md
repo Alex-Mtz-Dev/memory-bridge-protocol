@@ -157,8 +157,8 @@ What is intentionally **not** in this repo: the proprietary orchestration engine
 - **v0.1 (now):** AgentIdentity schema + reference bridge MCP surface + Fly.io deploy
 - **v0.2 (early):** Belief Envelope schema + read-only governance overlay (Mem0 integration)
 - **v0.2 (next):** Formal epistemic status transition rules and conformance tests
-- **v0.3:** Parliament proposal/vote schema + quorum resolution spec
-- **Later:** Framework-independent adapters (beyond MCP) and a conformance test suite
+- **v0.3 (shipped):** Parliament proposal/vote schema + weighted quorum-resolution spec + conformance suite
+- **Later:** Framework-independent adapters (beyond MCP)
 
 ---
 

@@ -1,0 +1,91 @@
+{
+  "proposal_id": "prop_quarantine_ghost_4cuts",
+  "proposal_type": "quarantine_belief",
+  "subject_ref": "belief_ghost_4cuts",
+  "proposition": "Quarantine 'Market consensus expects four Fed rate cuts before Q4' \u2014 no evidence, contradicted by futures.",
+  "domain": [
+    "macroeconomics",
+    "rates"
+  ],
+  "proposed_by": "risk_agent",
+  "created_at": "2026-06-05T15:40:00Z",
+  "quorum_policy": {
+    "min_votes": 3,
+    "min_weighted_consensus": 0.6,
+    "authority_scoping": true
+  },
+  "votes": [
+    {
+      "voter_agent": "macro_agent_v4",
+      "voter_trust_class": "model",
+      "position": "support",
+      "staked_confidence": 0.4,
+      "voter_quorum_weight": 0.6,
+      "voter_calibration_weight": 0.7,
+      "domain_relevance": 1.0,
+      "rationale": "Concede \u2014 the futures curve disagrees."
+    },
+    {
+      "voter_agent": "risk_agent",
+      "voter_trust_class": "model",
+      "position": "support",
+      "staked_confidence": 0.4,
+      "voter_quorum_weight": 0.7,
+      "voter_calibration_weight": 0.72,
+      "domain_relevance": 0.9,
+      "rationale": "Zero evidence chain; clear ghost."
+    },
+    {
+      "voter_agent": "equity_research_agent",
+      "voter_trust_class": "model",
+      "position": "abstain",
+      "staked_confidence": 0.0,
+      "domain_relevance": 0.2,
+      "rationale": "Out of my domain."
+    },
+    {
+      "voter_agent": "portfolio_agent",
+      "voter_trust_class": "model",
+      "position": "support",
+      "staked_confidence": 0.35,
+      "voter_quorum_weight": 0.75,
+      "voter_calibration_weight": 0.68,
+      "domain_relevance": 0.6
+    }
+  ],
+  "status": "resolved",
+  "resolution": {
+    "resolved_at": "2026-06-05T16:00:00+00:00",
+    "outcome": "passed",
+    "weighted_consensus": 1.0,
+    "effective_weight_formula": "quorum_weight * calibration_weight * domain_relevance * staked_confidence",
+    "quorum_met": true,
+    "total_votes": 4,
+    "support_weight": 0.45654,
+    "oppose_weight": 0.0,
+    "tally": [
+      {
+        "voter_agent": "macro_agent_v4",
+        "position": "support",
+        "effective_weight": 0.168
+      },
+      {
+        "voter_agent": "risk_agent",
+        "position": "support",
+        "effective_weight": 0.18144
+      },
+      {
+        "voter_agent": "equity_research_agent",
+        "position": "abstain",
+        "effective_weight": 0.0
+      },
+      {
+        "voter_agent": "portfolio_agent",
+        "position": "support",
+        "effective_weight": 0.1071
+      }
+    ],
+    "resulting_status": "quarantined",
+    "otel_span_id": "d4e5f6a7c3f0a1b2"
+  }
+}

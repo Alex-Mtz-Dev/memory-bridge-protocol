@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://memory-bridge-protocol.org/schemas/Parliament.v0.3.json",
+  "title": "Parliament Proposal",
+  "description": "A request to make a durable change to governed state, put to a weighted multi-agent vote. Parliament does not use majority rule. A vote is a stake: each voter commits confidence that is later scored against the realized outcome, and that score recalibrates the voter's future weight. Final consensus combines structural authority (quorum_weight), earned track record (calibration_weight), domain relevance (so an out-of-lane agent cannot drive a decision), and the stake itself. This sidesteps Arrow's impossibility result by aggregating predictions-with-skin-in-the-game rather than raw preferences.",
+  "type": "object",
+  "required": [
+    "proposal_id",
+    "proposal_type",
+    "subject_ref",
+    "proposition",
+    "proposed_by",
+    "created_at",
+    "status"
+  ],
+  "properties": {
+    "proposal_id": {
+      "type": "string",
+      "description": "Stable unique identifier for this proposal.",
+      "minLength": 1
+    },
+    "proposal_type": {
+      "type": "string",
+      "description": "The kind of durable change being decided.",
+      "enum": [
+        "promote_belief",
+        "quarantine_belief",
+        "supersede_belief",
+        "commit_decision",
+        "adjust_trust_weight",
+        "custom"
+      ]
+    },
+    "subject_ref": {
+      "type": "string",
+      "description": "What the proposal concerns: a belief_id, decision id, or agent_id (for trust-weight changes).",
+      "minLength": 1
+    },
+    "proposition": {
+      "type": "string",
+      "description": "Natural-language statement of exactly what passing this proposal would make true.",
+      "minLength": 1
+    },
+    "domain": {
+      "type": "array",
+      "description": "Domain(s) this proposal touches (e.g. ['semiconductors','equity-valuation']). Matched against each voter's domain_authorities to compute domain_relevance.",
+      "items": { "type": "string" }
+    },
+    "proposed_by": {
+      "type": "string",
+      "description": "AgentIdentity.id of the proposing agent.",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "voting_deadline": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional cutoff after which the proposal resolves on the votes received."
+    },
+    "quorum_policy": {
+      "$ref": "#/$defs/QuorumPolicy"
+    },
+    "votes": {
+      "type": "array",
+      "description": "Stakes cast by participating agents.",
+      "items": { "$ref": "#/$defs/Vote" }
+    },
+    "resolution": {
+      "$ref": "#/$defs/Resolution",
+      "description": "Present once the proposal is resolved."
+    },
+    "status": {
+      "type": "string",
+      "description": "Lifecycle state of the proposal.",
+      "enum": ["open", "resolved", "expired", "withdrawn"]
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "QuorumPolicy": {
+      "type": "object",
+      "description": "Rules that decide whether and how the proposal passes.",
+      "properties": {
+        "min_votes": {
+          "type": "integer",
+          "description": "Minimum number of votes (any position) required for a valid resolution.",
+          "minimum": 1
+        },
+        "min_weighted_consensus": {
+          "type": "number",
+          "description": "Weighted-consensus threshold in [0,1] the proposal must reach to pass.",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "aggregation": {
+          "type": "string",
+          "description": "Aggregation method. weighted_consensus = support_weight / (support_weight + oppose_weight) over effective weights.",
+          "enum": ["weighted_consensus", "supermajority_weighted"],
+          "default": "weighted_consensus"
+        },
+        "authority_scoping": {
+          "type": "boolean",
+          "description": "If true, each vote's weight is scaled by the voter's domain_relevance to the proposal domain.",
+          "default": true
+        }
+      }
+    },
+    "Vote": {
+      "type": "object",
+      "description": "A single agent's stake on the proposal. Not a preference — a scored commitment.",
+      "required": ["voter_agent", "voter_trust_class", "position", "staked_confidence"],
+      "properties": {
+        "vote_id": { "type": "string" },
+        "voter_agent": {
+          "type": "string",
+          "description": "AgentIdentity.id of the voter.",
+          "minLength": 1
+        },
+        "voter_trust_class": {
+          "type": "string",
+          "enum": ["user", "system", "claude", "model", "worker"]
+        },
+        "position": {
+          "type": "string",
+          "enum": ["support", "oppose", "abstain"]
+        },
+        "staked_confidence": {
+          "type": "number",
+          "description": "How strongly the voter commits, in [0,1]. Capped by the voter's confidence_ceiling. This is what gets scored against the realized outcome.",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "voter_quorum_weight": {
+          "type": "number",
+          "description": "Structural authority of the voter at vote time (from AgentIdentity.quorum_weight).",
+          "minimum": 0
+        },
+        "voter_calibration_weight": {
+          "type": "number",
+          "description": "Earned track record of the voter at vote time (Brier-derived, from Belief Envelope calibration).",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "domain_relevance": {
+          "type": "number",
+          "description": "How relevant the voter's authority is to the proposal domain, in [0,1]. 1 = directly authoritative; low = out of lane.",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "rationale": { "type": "string" },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "cast_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": true
+    },
+    "Resolution": {
+      "type": "object",
+      "description": "The aggregated, auditable outcome. Every effective weight is recorded so the decision can be reconstructed.",
+      "required": ["outcome", "weighted_consensus", "quorum_met"],
+      "properties": {
+        "resolved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": ["passed", "rejected", "no_quorum", "tie"]
+        },
+        "weighted_consensus": {
+          "type": "number",
+          "description": "Final aggregated support score in [0,1].",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "effective_weight_formula": {
+          "type": "string",
+          "description": "Human-readable description of the weighting used, for audit. E.g. 'quorum_weight * calibration_weight * domain_relevance * staked_confidence'."
+        },
+        "quorum_met": { "type": "boolean" },
+        "total_votes": { "type": "integer", "minimum": 0 },
+        "support_weight": { "type": "number", "minimum": 0 },
+        "oppose_weight": { "type": "number", "minimum": 0 },
+        "tally": {
+          "type": "array",
+          "description": "Per-vote effective-weight breakdown (audit trail).",
+          "items": {
+            "type": "object",
+            "properties": {
+              "voter_agent": { "type": "string" },
+              "position": { "type": "string" },
+              "effective_weight": { "type": "number" }
+            }
+          }
+        },
+        "resulting_status": {
+          "type": "string",
+          "description": "Epistemic status the subject transitions to if the proposal passed.",
+          "enum": ["observed", "inferred", "contested", "verified", "superseded", "quarantined"]
+        },
+        "otel_span_id": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  }
+}
