@@ -1,0 +1,23 @@
+# Memory Bridge Protocol — AutoGen integration dependencies
+#
+# Install all:
+#   pip install -r requirements.txt
+#
+# Minimal (client only, no AutoGen example):
+#   pip install httpx
+
+# HTTP client (bridge communication)
+httpx>=0.27.0
+
+# AutoGen 0.4 (ag2) — multi-agent framework
+# autogen-agentchat includes autogen-core as a dependency
+autogen-agentchat>=0.4.0
+
+# AutoGen model extensions (OpenAI, Anthropic, etc.)
+autogen-ext[openai]>=0.4.0
+
+# Optional: if you want to use Claude / Anthropic models instead of OpenAI
+# autogen-ext[anthropic]>=0.4.0
+
+# Optional: load environment variables from .env
+python-dotenv>=1.0.0
