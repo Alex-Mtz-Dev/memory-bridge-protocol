@@ -1,0 +1,7 @@
+# Memory Bridge Protocol — Mem0 overlay
+#
+# The overlay itself is pure standard library — no install needed to run it
+# or the example. Add mem0ai only when wiring against a live Mem0 store.
+
+# Optional: live Mem0 store
+# mem0ai>=0.1.0

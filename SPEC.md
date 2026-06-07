@@ -1,4 +1,4 @@
-# Memory Bridge Protocol — Specification (v0.1)
+# Memory Bridge Protocol — Specification (v0.1 core, with early v0.2 deliveries)
 
 > Status: **Draft / proposal.** This document describes the v0.1 surface. It is expected to change.
 
@@ -45,10 +45,20 @@ Consequential changes are submitted as **proposals**. Each registered agent may 
 - A breaking change to any schema increments its minor version.
 - This spec document tracks the protocol surface as a whole.
 
-## 6. What v0.1 does not yet specify
+## 6. Early delivered v0.2 surfaces
 
-- The full belief-envelope schema (the typed structure of a `memory_put` payload) — **v0.2**
-- The epistemic-status state machine (legal transitions between `observed` / `inferred` / `contested` / `verified` / `refuted`) — **v0.2**
+Two v0.2 roadmap surfaces are already published:
+
+- **Belief Envelope v0.1 schema:** [`schemas/BeliefEnvelope.v0.1.json`](schemas/BeliefEnvelope.v0.1.json)
+	- Defines the governed payload for a single belief.
+	- Includes portable core fields plus optional `reality_check`, `calibration`, and `consensus` modules.
+- **Read-only Mem0 governance overlay:** [`integrations/mem0-overlay/`](integrations/mem0-overlay/)
+	- Scores beliefs for decay, drift, contamination, and calibration.
+	- Produces governance/risk assessments without mutating upstream memory stores.
+
+## 7. What is still pending
+
+- The formal epistemic-status transition state machine (legal transitions and guard rules) — **v0.2**
 - The proposal/vote message schema — **v0.3**
 - A conformance test suite
 

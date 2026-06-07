@@ -1,0 +1,42 @@
+{
+  "belief_id": "belief_nvda_margin_fy27",
+  "proposition": "NVIDIA data-center gross-margin expansion continues through FY2027.",
+  "cell_type": "fact",
+  "source_agent": "equity_research_agent",
+  "source_trust_class": "model",
+  "confidence": 0.40,
+  "epistemic_status": "inferred",
+  "created_at": "2026-06-05T14:30:00Z",
+  "evidence": {
+    "refs": [
+      "sec:NVDA-10Q-2026Q1",
+      "transcript:NVDA-earnings-2026Q1",
+      "internal:datacenter-tam-model-v4"
+    ],
+    "evidence_score": 0.84,
+    "chain_terminates_in_agent_content": false
+  },
+  "decay": {
+    "model": "exponential",
+    "half_life": "P30D",
+    "effective_confidence": 0.37
+  },
+  "reality_check": {
+    "truth_drift_score": 0.18,
+    "drift_data_ref": "series:NVDA-gross-margin-quarterly",
+    "last_reconciled_at": "2026-06-05T13:00:00Z"
+  },
+  "calibration": {
+    "outcome": "pending",
+    "calibration_weight": 0.79
+  },
+  "consensus": {
+    "consensus_score": 0.62,
+    "vote_count": 4,
+    "quorum_met": true
+  },
+  "telemetry": {
+    "otel_span_id": "7be1c0a9f4d2e8b1"
+  },
+  "thread_id": "equity-research"
+}

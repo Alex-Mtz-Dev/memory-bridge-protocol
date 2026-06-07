@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://memory-bridge-protocol.org/schemas/BeliefEnvelope.v0.1.json",
+  "title": "Belief Envelope",
+  "description": "The structure of a single governed belief in the Memory Bridge Protocol. Wraps any stored memory (e.g. a Mem0 record) with the trust, decay, reality, provenance, and consensus metadata that turns a memory store into a belief store. The storage engine holds the content; the envelope governs the trust. Required fields form the portable core; optional objects (reality_check, calibration, consensus) carry the domain-grade extensions.",
+  "type": "object",
+  "required": [
+    "belief_id",
+    "proposition",
+    "cell_type",
+    "source_agent",
+    "source_trust_class",
+    "confidence",
+    "epistemic_status",
+    "created_at"
+  ],
+  "properties": {
+    "belief_id": {
+      "type": "string",
+      "description": "Stable unique identifier for this belief.",
+      "minLength": 1
+    },
+    "proposition": {
+      "type": "string",
+      "description": "The claim this belief asserts, in natural language.",
+      "minLength": 1
+    },
+    "cell_type": {
+      "type": "string",
+      "description": "The kind of belief. Mirrors the bridge's memory cell types.",
+      "enum": ["fact", "decision", "open_loop", "artifact"]
+    },
+    "source_agent": {
+      "type": "string",
+      "description": "AgentIdentity.id of the agent that asserted this belief.",
+      "minLength": 1
+    },
+    "source_trust_class": {
+      "type": "string",
+      "description": "Trust class of the asserting agent. Determines the confidence ceiling the bridge enforces.",
+      "enum": ["user", "system", "claude", "model", "worker"]
+    },
+    "confidence": {
+      "type": "number",
+      "description": "Asserted confidence at write time. The bridge clamps this to the source's confidence_ceiling (e.g. model-class actors cap at 0.40).",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "epistemic_status": {
+      "type": "string",
+      "description": "Position in the epistemic state machine. Typical transitions: observed|inferred -> contested -> verified | superseded | quarantined.",
+      "enum": ["observed", "inferred", "contested", "verified", "superseded", "quarantined"]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the belief was first asserted (RFC 3339)."
+    },
+    "evidence": {
+      "type": "object",
+      "description": "Provenance chain. The audit asset: where the belief came from and how well it is supported.",
+      "properties": {
+        "refs": {
+          "type": "array",
+          "description": "References to supporting evidence (URIs, filing ids, document ids, transcript ids).",
+          "items": { "type": "string" }
+        },
+        "evidence_score": {
+          "type": "number",
+          "description": "Strength of the supporting evidence, 0-1. Low scores trip the immune system's ghost-belief check.",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "chain_terminates_in_agent_content": {
+          "type": "boolean",
+          "description": "True if the evidence chain bottoms out in agent-generated content rather than an external source. Signals citation-loop / recursive-collapse risk."
+        }
+      }
+    },
+    "decay": {
+      "type": "object",
+      "description": "Metabolic decay. Belief confidence erodes over time on a half-life appropriate to the information type (rumor: days; SEC fact: a year).",
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": ["exponential", "step", "none"],
+          "default": "exponential"
+        },
+        "half_life": {
+          "type": "string",
+          "description": "Decay half-life as an ISO 8601 duration, e.g. P3D (rumor), P30D (macro forecast), P365D (SEC filing fact)."
+        },
+        "effective_confidence": {
+          "type": "number",
+          "description": "Confidence after decay is applied at read time. Derived, not asserted.",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "reality_check": {
+      "type": "object",
+      "description": "Belief mark-to-market. Reconciles the belief against realized ground truth (market data, outcomes). Only domains with continuous ground truth (e.g. trading) can fully populate this.",
+      "properties": {
+        "truth_drift_score": {
+          "type": "number",
+          "description": "Divergence between belief and realized data: 0 (aligned) to 1 (contradicted). Rising drift accelerates decay and raises review priority.",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "drift_data_ref": {
+          "type": "string",
+          "description": "Reference to the realized data series the belief is marked against (e.g. a ticker or metric series)."
+        },
+        "last_reconciled_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "calibration": {
+      "type": "object",
+      "description": "Outcome tracking and derived trust. Every resolved belief is a labeled example that recalibrates the source agent's trust weight.",
+      "properties": {
+        "outcome": {
+          "type": "string",
+          "enum": ["pending", "confirmed", "refuted", "partial"],
+          "default": "pending"
+        },
+        "resolved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "calibration_weight": {
+          "type": "number",
+          "description": "Trust weight DERIVED from the source agent's realized calibration (e.g. rolling Brier score). Not self-asserted, not human-assigned.",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "consensus": {
+      "type": "object",
+      "description": "Parliament governance. Records multi-agent agreement on durable beliefs. Aggregation should weight by authority, calibration, and evidence quality (not pure majority).",
+      "properties": {
+        "consensus_score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "vote_count": { "type": "integer", "minimum": 0 },
+        "quorum_met": { "type": "boolean" }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "description": "Observability. Links the belief mutation to an OpenTelemetry GenAI span for audit.",
+      "properties": {
+        "otel_span_id": { "type": "string" },
+        "otel_trace_id": { "type": "string" }
+      }
+    },
+    "thread_id": {
+      "type": "string",
+      "description": "Namespace the belief was written into.",
+      "default": "default"
+    },
+    "ttl_days": {
+      "type": "integer",
+      "description": "Optional hard expiry in days. The Immune service sweeps beliefs below confidence 0.20; the Metabolic floor is 0.10.",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": true
+}

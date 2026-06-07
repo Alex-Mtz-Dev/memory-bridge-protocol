@@ -75,6 +75,44 @@ The smallest, most portable piece of the protocol — and the right place to sta
 
 If you build agents, you can adopt this schema today — independent of the rest of the protocol — to give your agents portable, trust-aware identities. That's the invitation.
 
+---
+
+## Belief Envelope v0.1 (early delivery)
+
+The protocol now includes a governed belief payload schema:
+
+- **Schema:** [`schemas/BeliefEnvelope.v0.1.json`](schemas/BeliefEnvelope.v0.1.json)
+- **Examples:** [`schemas/examples/belief-finance.json`](schemas/examples/belief-finance.json), [`schemas/examples/belief-quarantined.json`](schemas/examples/belief-quarantined.json)
+
+The envelope keeps a portable core (`belief_id`, proposition, source, confidence, epistemic status) and adds optional domain-grade modules:
+
+- **Reality Check:** `truth_drift_score`, `drift_data_ref`, `last_reconciled_at`
+- **Calibration:** outcome labels and calibration-derived trust weighting
+- **Consensus:** quorum-oriented multi-agent agreement metadata
+
+### Validate a belief envelope
+
+```bash
+npx ajv-cli validate \
+  -s schemas/BeliefEnvelope.v0.1.json \
+  -d schemas/examples/belief-finance.json \
+  --spec=draft2020
+```
+
+---
+
+## Read-only Mem0 governance overlay
+
+A reference overlay is now included at [`integrations/mem0-overlay/`](integrations/mem0-overlay/).
+
+It is intentionally **read-only**: it scores beliefs for decay, reality drift, contamination, and calibration without writing back to the memory store. This allows teams to run governance over live memory systems without putting a new component in the critical write path.
+
+Key capabilities in the reference implementation:
+
+- **Reality drift** scoring via pluggable reconcilers
+- **Brier-based calibration** to penalize overconfident, inaccurate sources
+- **Epistemic state recommendations** (`observed`, `contested`, `verified`, `quarantined`, `superseded`)
+
 ### Validate an identity file
 
 ```bash
@@ -117,7 +155,8 @@ What is intentionally **not** in this repo: the proprietary orchestration engine
 ## Roadmap
 
 - **v0.1 (now):** AgentIdentity schema + reference bridge MCP surface + Fly.io deploy
-- **v0.2:** Belief envelope schema (the structure of a `memory_put` payload) + epistemic status state machine
+- **v0.2 (early):** Belief Envelope schema + read-only governance overlay (Mem0 integration)
+- **v0.2 (next):** Formal epistemic status transition rules and conformance tests
 - **v0.3:** Parliament proposal/vote schema + quorum resolution spec
 - **Later:** Framework-independent adapters (beyond MCP) and a conformance test suite
 
