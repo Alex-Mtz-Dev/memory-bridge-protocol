@@ -1,15 +1,19 @@
 # fly.toml — reference deployment for a Memory Bridge instance
-# Adjust `app` to a unique name before first deploy: `fly launch --copy-config --no-deploy`
+# 1. Set `app` to a unique name: `fly launch --copy-config --no-deploy`
+# 2. Set secrets: `fly secrets set AIK_API_KEYS=your_key`
+# 3. Deploy: `fly deploy`
+#
+# Live reference deployment: https://aik-memory-bridge.fly.dev
 
 app = "memory-bridge"
 primary_region = "iad"
 
 [build]
-  image = "registry.fly.io/aik-memory-bridge:latest"
+  image = "registry.fly.io/aik-memory-bridge:deployment-01KSWVYFFX9CNPKD7Y1Y00JYME"
 
 [env]
   PORT = "8080"
-  # PROJECT_ID is set per-instance by the operator, not committed here.
+  # Set PROJECT_ID per-instance via `fly secrets set`
 
 [http_service]
   internal_port = 8080
@@ -27,8 +31,6 @@ primary_region = "iad"
   size = "shared-cpu-1x"
   memory = "256mb"
 
-# The MCP endpoint is served at /mcp on the internal port.
-# Healthcheck uses POST /mcp — JSON-RPC returns HTTP 200 even for malformed requests.
 [checks]
   [checks.health]
     type = "http"
