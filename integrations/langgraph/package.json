@@ -1,0 +1,23 @@
+{
+  "name": "memory-bridge-langgraph",
+  "version": "0.1.0",
+  "description": "LangGraph JS agent for Memory Bridge Protocol — reads BeliefEnvelopes via MCP",
+  "type": "module",
+  "scripts": {
+    "build":          "tsc",
+    "error-analysis": "npx ts-node --esm error-analysis.ts",
+    "agent":          "npx ts-node --esm langgraph-agent.ts"
+  },
+  "dependencies": {
+    "@langchain/core":     "^0.3.0",
+    "@langchain/langgraph": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node":     "^10.9.0",
+    "typescript":  "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
