@@ -38,13 +38,37 @@ class Handler(BaseHTTPRequestHandler):
     server_version = "TrustRouter/0.1"
 
     # ── helpers ────────────────────────────────────────────────────────────────
+    def _cors(self) -> None:
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+
     def _send(self, code: int, payload: dict) -> None:
         body = json.dumps(payload, indent=2).encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
+        self._cors()
         self.end_headers()
         self.wfile.write(body)
+
+    def _send_html(self, path: str) -> None:
+        try:
+            with open(path, "rb") as fh:
+                body = fh.read()
+        except OSError:
+            return self._send(404, {"error": "console_not_found"})
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self._cors()
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self._cors()
+        self.end_headers()
 
     def _read_json(self) -> dict:
         length = int(self.headers.get("Content-Length", 0))
@@ -56,6 +80,9 @@ class Handler(BaseHTTPRequestHandler):
 
     # ── routes ───────────────────────────────────────────────────────────────────
     def do_GET(self):
+        if self.path in ("/", "/index.html", "/console"):
+            here = os.path.dirname(os.path.abspath(__file__))
+            return self._send_html(os.path.join(here, "console.html"))
         if self.path == "/health":
             return self._send(200, {"ok": True})
         if self.path == "/agents":
@@ -77,7 +104,15 @@ class Handler(BaseHTTPRequestHandler):
             if self.path == "/route":
                 domain = body.get("domain", "")
                 candidates = body.get("candidates")
-                decisions = ROUTER.route(domain, candidates)
+                # Per-request policy override so the console's strict toggle is
+                # enforced server-side, not faked in the browser.
+                router = ROUTER
+                if "require_domain_authority" in body:
+                    router = TrustRouter(
+                        ROUTER.registry,
+                        {"require_domain_authority": bool(body["require_domain_authority"])},
+                    )
+                decisions = router.route(domain, candidates)
                 return self._send(200, {"decisions": [asdict(d) for d in decisions]})
             return self._send(404, {"error": "not_found", "path": self.path})
         except (TrustContractError, BeliefRejected, RoutingError) as err:

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Trust-Aware Router · Console</title>
+<style>
+  :root {
+    --bg: #0e1116; --panel: #161b22; --line: #2d333b; --ink: #e6edf3;
+    --muted: #8b949e; --accent: #58a6ff; --ok: #3fb950; --warn: #d29922; --bad: #f85149;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 14px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; }
+  header { padding: 18px 24px; border-bottom: 1px solid var(--line); }
+  header h1 { margin: 0; font-size: 18px; }
+  header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+          gap: 16px; padding: 16px 24px; max-width: 1200px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .panel h2 { margin: 0 0 4px; font-size: 14px; }
+  .panel .hint { color: var(--muted); font-size: 12px; margin: 0 0 12px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin: 8px 0 3px; }
+  input, select, textarea {
+    width: 100%; background: #0d1117; border: 1px solid var(--line); color: var(--ink);
+    border-radius: 6px; padding: 7px 9px; font-family: var(--mono); font-size: 13px; }
+  textarea { resize: vertical; min-height: 60px; }
+  .row { display: flex; gap: 8px; }
+  .row > * { flex: 1; }
+  button { margin-top: 12px; background: var(--accent); color: #0d1117; border: 0;
+           border-radius: 6px; padding: 9px 14px; font-weight: 600; cursor: pointer; }
+  button:hover { filter: brightness(1.08); }
+  pre { background: #0d1117; border: 1px solid var(--line); border-radius: 6px;
+        padding: 10px; overflow: auto; font-family: var(--mono); font-size: 12px; margin: 12px 0 0; }
+  .tag { display: inline-block; font-family: var(--mono); font-size: 11px; padding: 1px 7px;
+         border-radius: 10px; border: 1px solid var(--line); }
+  .ok { color: var(--ok); border-color: var(--ok); }
+  .warn { color: var(--warn); border-color: var(--warn); }
+  .bad { color: var(--bad); border-color: var(--bad); }
+  .agent { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin-top: 8px; }
+  .agent b { font-family: var(--mono); }
+  .clamp { font-family: var(--mono); }
+  .clamp .arrow { color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Trust-Aware Agentic Router</h1>
+  <p>Live console over the router HTTP API. Trust is enforced server-side: confidence is clamped to the
+     <em>registered</em> trust class, never the value a belief declares.</p>
+</header>
+
+<div class="grid">
+  <!-- Registry -->
+  <section class="panel">
+    <h2>1 · Registry</h2>
+    <p class="hint">AgentIdentity.v0.2 records. Registration rejects unknown fields and over-ceiling declarations.</p>
+    <div id="agents"></div>
+    <details style="margin-top:12px">
+      <summary style="cursor:pointer;color:var(--muted)">register a new agent</summary>
+      <div class="row"><div><label>id</label><input id="r_id" value="gemini"></div>
+        <div><label>trust_class</label>
+          <select id="r_tc"><option>user</option><option>system</option>
+            <option selected>claude</option><option>model</option><option>worker</option></select></div></div>
+      <label>name</label><input id="r_name" value="Gemini CLI">
+      <label>domain_authorities (comma-separated)</label><input id="r_dom" value="research,analysis">
+      <div class="row"><div><label>confidence_ceiling</label><input id="r_cc" value="0.40"></div>
+        <div><label>quorum_weight</label><input id="r_qw" value="0.50"></div></div>
+      <button onclick="registerAgent()">POST /agents</button>
+      <pre id="r_out" hidden></pre>
+    </details>
+  </section>
+
+  <!-- Belief admission -->
+  <section class="panel">
+    <h2>2 · Belief admission &amp; clamping</h2>
+    <p class="hint">POST a BeliefEnvelope. Try a high confidence from a model agent, or spoof source_trust_class.</p>
+    <div class="row"><div><label>source_agent</label><input id="b_agent" value="claude"></div>
+      <div><label>source_trust_class (claimed)</label>
+        <select id="b_tc"><option>user</option><option>system</option>
+          <option selected>claude</option><option>model</option><option>worker</option></select></div></div>
+    <div class="row"><div><label>confidence (asserted)</label><input id="b_conf" value="0.97"></div>
+      <div><label>cell_type</label>
+        <select id="b_cell"><option selected>fact</option><option>decision</option>
+          <option>open_loop</option><option>artifact</option></select></div></div>
+    <label>proposition</label><textarea id="b_prop">Acme will beat earnings.</textarea>
+    <button onclick="admitBelief()">POST /beliefs</button>
+    <div id="b_summary"></div>
+    <pre id="b_out" hidden></pre>
+  </section>
+
+  <!-- Routing -->
+  <section class="panel">
+    <h2>3 · Routing</h2>
+    <p class="hint">Rank agents for a task domain. Domain authority dominates; trust precedence breaks ties.</p>
+    <label>domain</label><input id="t_domain" value="analysis">
+    <label><input type="checkbox" id="t_strict" style="width:auto;margin-right:6px">require domain authority</label>
+    <button onclick="route()">POST /route</button>
+    <div id="t_out"></div>
+  </section>
+</div>
+
+<script>
+const API = location.origin.startsWith("http") ? location.origin : "http://127.0.0.1:8787";
+const $ = (id) => document.getElementById(id);
+
+async function api(path, body) {
+  const opt = body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {};
+  const res = await fetch(API + path, opt);
+  return { status: res.status, data: await res.json() };
+}
+
+function badge(text, cls) { return `<span class="tag ${cls}">${text}</span>`; }
+
+async function loadAgents() {
+  const { data } = await api("/agents");
+  $("agents").innerHTML = (data.agents || []).map(a => `
+    <div class="agent"><b>${a.id}</b> ${badge(a.trust_class, "ok")}
+      <div style="color:var(--muted);font-size:12px">ceiling ${a.confidence_ceiling} ·
+      domains: ${(a.domain_authorities || []).join(", ") || "—"}</div></div>`).join("");
+}
+
+async function registerAgent() {
+  const rec = {
+    id: $("r_id").value, name: $("r_name").value, trust_class: $("r_tc").value,
+    domain_authorities: $("r_dom").value.split(",").map(s => s.trim()).filter(Boolean),
+    confidence_ceiling: parseFloat($("r_cc").value), quorum_weight: parseFloat($("r_qw").value),
+    created_at: new Date().toISOString(), registered_by: "console",
+  };
+  const { status, data } = await api("/agents", rec);
+  const out = $("r_out"); out.hidden = false;
+  out.textContent = (status === 201 ? "✓ registered\n" : "✗ rejected\n") + JSON.stringify(data, null, 2);
+  if (status === 201) loadAgents();
+}
+
+async function admitBelief() {
+  const belief = {
+    belief_id: "b-" + Date.now(), proposition: $("b_prop").value, cell_type: $("b_cell").value,
+    source_agent: $("b_agent").value, source_trust_class: $("b_tc").value,
+    confidence: parseFloat($("b_conf").value), epistemic_status: "inferred",
+    created_at: new Date().toISOString(),
+  };
+  const { status, data } = await api("/beliefs", belief);
+  const sum = $("b_summary");
+  if (status === 200) {
+    const g = data.belief._governance;
+    const clamped = g.clamped_confidence < g.asserted_confidence;
+    sum.innerHTML = `<div class="clamp" style="margin-top:12px">
+      confidence ${g.asserted_confidence} <span class="arrow">→</span>
+      <b class="${clamped ? "warn" : "ok"}">${g.clamped_confidence}</b>
+      ${clamped ? badge("clamped to ceiling " + g.ceiling, "warn") : badge("within ceiling", "ok")}<br>
+      trust class ${g.declared_trust_class === g.registered_trust_class ? badge(g.registered_trust_class, "ok") :
+        `${badge("claimed " + g.declared_trust_class, "bad")} → ${badge("registered " + g.registered_trust_class, "ok")}
+         ${badge("override", "bad")}`}</div>`;
+  } else {
+    sum.innerHTML = `<div style="margin-top:12px">${badge("rejected · " + data.error, "bad")}
+      <div style="color:var(--muted);font-size:12px">${data.detail || ""}</div></div>`;
+  }
+  const out = $("b_out"); out.hidden = false; out.textContent = JSON.stringify(data, null, 2);
+}
+
+async function route() {
+  const body = { domain: $("t_domain").value, require_domain_authority: $("t_strict").checked };
+  const { status, data } = await api("/route", body);
+  const out = $("t_out");
+  if (status !== 200) {
+    out.innerHTML = `<div style="margin-top:12px">${badge("no route · " + data.error, "bad")}
+      <div style="color:var(--muted);font-size:12px">${data.detail || ""}</div></div>`;
+    return;
+  }
+  const rows = data.decisions;
+  out.innerHTML = rows.length ? rows.map((d, i) => `
+    <div class="agent"><b>${i === 0 ? "▶ " : ""}${d.agent_id}</b>
+      ${badge(d.trust_class, "ok")} ${d.domain_match ? badge("authoritative", "ok") : badge("fallback", "warn")}
+      <div style="color:var(--muted);font-size:12px">score ${d.score}</div></div>`).join("")
+    : `<div style="margin-top:12px">${badge("no eligible agent", "bad")}</div>`;
+}
+
+loadAgents();
+</script>
+</body>
+</html>
