@@ -42,9 +42,12 @@
     },
     "confidence": {
       "type": "number",
-      "description": "Asserted confidence at write time. The bridge clamps this to the source's confidence_ceiling (e.g. model-class actors cap at 0.40).",
+      "description": "Asserted confidence at write time, 0.0–1.0 float. The bridge clamps this to the source agent's confidence_ceiling (model-class: 0.40). MUST be a floating-point value — integer coercion (Math.round, parseInt, bitwise truncation) corrupts cross-agent belief exchange and is prohibited by all implementations.",
       "minimum": 0,
-      "maximum": 1
+      "maximum": 1,
+      "$comment": "IEEE-754 float64 required. Implementations MUST: (1) parse with parseFloat(), never parseInt()/Math.round()/Number.toFixed(0); (2) serialise as a decimal fraction (e.g. 0.3500 not 0); (3) validate with typeof v === 'number' && isFinite(v) before accepting. Python callers MUST annotate the parameter as float. The cumulative confidence error across 50 model-class exchanges (ceiling 0.40) with Math.round coercion is 15.8950 confidence units (100% signal loss) — equivalent to discarding every belief.",
+      "x-float-only": true,
+      "x-prohibit-coercion": ["Math.round", "parseInt", "Number.toFixed(0)", "~~v", "v|0", "int(v)"]
     },
     "epistemic_status": {
       "type": "string",

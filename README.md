@@ -154,9 +154,9 @@ What is intentionally **not** in this repo: the proprietary orchestration engine
 
 ## Roadmap
 
-- **v0.1 (now):** AgentIdentity schema + reference bridge MCP surface + Fly.io deploy
-- **v0.2 (early):** Belief Envelope schema + read-only governance overlay (Mem0 integration)
-- **v0.2 (next):** Formal epistemic status transition rules and conformance tests
+- **v0.1 (shipped):** AgentIdentity schema + reference bridge MCP surface + Fly.io deploy
+- **v0.2 (shipped):** Belief Envelope schema + read-only governance overlay (Mem0 integration)
+- **v0.2 follow-up (shipped):** Formal epistemic status transition rules and conformance tests
 - **v0.3 (shipped):** Parliament proposal/vote schema + weighted quorum-resolution spec + conformance suite
 - **Later:** Framework-independent adapters (beyond MCP)
 
