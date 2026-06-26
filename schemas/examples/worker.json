@@ -4,9 +4,9 @@
   "trust_class": "worker",
   "domain_authorities": ["fleet-health", "task-execution"],
   "registered_skills": ["parliament-vote", "pi-health-receipt", "task-execution"],
-  "confidence_ceiling": 0.60,
+  "confidence_ceiling": 0.30,
   "quorum_weight": 0.40,
   "created_at": "2026-05-19T00:00:00.000Z",
   "registered_by": "alex",
-  "notes": "Edge executor. Executes claimed tasks and reports health receipts."
+  "notes": "Edge executor. Executes claimed tasks and reports health receipts. confidence_ceiling matches the enforced worker maximum (BASE_CONFIDENCE_CEILING.worker = 0.30)."
 }

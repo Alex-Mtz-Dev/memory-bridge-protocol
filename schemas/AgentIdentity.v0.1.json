@@ -2,9 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://memorybridge.dev/schemas/AgentIdentity.v0.1.json",
   "title": "AgentIdentity",
-  "description": "Identity and trust contract for an agent participating in a Memory Bridge. Defines who an agent is, what it is authoritative over, and how much its writes and votes are weighted. additionalProperties is intentionally true to preserve forward compatibility with extended agent records.",
+  "description": "Identity and trust contract for an agent participating in a Memory Bridge. Defines who an agent is, what it is authoritative over, and how much its writes and votes are weighted. The top-level contract is closed (additionalProperties: false) because it carries trust-bearing fields; forward-compatible, non-authoritative metadata belongs in the 'extensions' object, which is never consumed by trust or governance logic.",
   "type": "object",
-  "additionalProperties": true,
+  "additionalProperties": false,
   "required": [
     "id",
     "name",
@@ -39,13 +39,13 @@
     },
     "confidence_ceiling": {
       "type": "number",
-      "description": "Maximum confidence this agent may assert on any single belief, regardless of the confidence value it submits. Writes above the ceiling are clamped. Convention: user/system = 1.0, model agents capped below 1.0 to prevent runaway self-reinforcement.",
+      "description": "Maximum confidence this agent may assert on any single belief, regardless of the confidence value it submits. Writes above the ceiling are clamped. The per-trust_class maximum is enforced by the allOf rules below and must stay in sync with BASE_CONFIDENCE_CEILING in integrations/conflict-resolution/types.ts. A record may declare a LOWER ceiling than its class maximum, but never a higher one.",
       "minimum": 0,
       "maximum": 1
     },
     "quorum_weight": {
       "type": "number",
-      "description": "Voting weight of this agent in Parliament governance decisions. A proposal passes when the sum of YES weights meets the configured quorum threshold.",
+      "description": "Voting weight of this agent in Parliament governance decisions. A proposal passes when the sum of YES weights meets the configured quorum threshold. Note: there is no per-class maximum enforced on quorum_weight; consumers must not treat a record-declared weight as authoritative without out-of-band registration.",
       "minimum": 0
     },
     "created_at": {
@@ -66,6 +66,33 @@
     "notes": {
       "type": "string",
       "description": "Optional. Free-text operator notes about the agent's role or constraints."
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Optional. Forward-compatibility escape hatch for non-authoritative metadata. Trust and governance logic MUST NOT read from this object. Unknown future fields belong here, not at the top level, so that schema validity continues to imply trust-contract integrity.",
+      "additionalProperties": true
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "trust_class": { "const": "user" } }, "required": ["trust_class"] },
+      "then": { "properties": { "confidence_ceiling": { "maximum": 1.0 } } }
+    },
+    {
+      "if": { "properties": { "trust_class": { "const": "system" } }, "required": ["trust_class"] },
+      "then": { "properties": { "confidence_ceiling": { "maximum": 1.0 } } }
+    },
+    {
+      "if": { "properties": { "trust_class": { "const": "claude" } }, "required": ["trust_class"] },
+      "then": { "properties": { "confidence_ceiling": { "maximum": 0.40 } } }
+    },
+    {
+      "if": { "properties": { "trust_class": { "const": "model" } }, "required": ["trust_class"] },
+      "then": { "properties": { "confidence_ceiling": { "maximum": 0.40 } } }
+    },
+    {
+      "if": { "properties": { "trust_class": { "const": "worker" } }, "required": ["trust_class"] },
+      "then": { "properties": { "confidence_ceiling": { "maximum": 0.30 } } }
+    }
+  ]
 }
