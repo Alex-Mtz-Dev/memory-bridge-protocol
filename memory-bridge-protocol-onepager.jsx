@@ -365,7 +365,7 @@ export default function OnePager() {
                   lineHeight: 1.7,
                 }}>
                   npx ajv-cli validate \<br />
-                  {"  "}-s schemas/AgentIdentity.v0.1.json \<br />
+                  {"  "}-s schemas/AgentIdentity.v0.2.json \<br />
                   {"  "}-d schemas/examples/claude.json \<br />
                   {"  "}--spec=draft2020
                 </code>

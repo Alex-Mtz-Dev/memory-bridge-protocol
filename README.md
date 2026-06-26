@@ -29,7 +29,7 @@ Memory is not a flat document store. Every fact, decision, open loop, and artifa
 A model agent cannot assert the same authority as a human operator. Each agent carries a `trust_class` and a `confidence_ceiling`. A model writing at confidence `0.9` is **clamped** to its ceiling. This is the mechanism that prevents an agent from reading its own past output and bootstrapping false certainty — the echo-chamber failure mode of naive memory systems.
 
 ### 3. Agent identity registry
-Every participating agent has an [`AgentIdentity`](schemas/AgentIdentity.v0.1.json) record: who it is, what domains it is authoritative over, how much its writes and votes weigh. Identity is the substrate everything else builds on — and today there is **no standard for it**.
+Every participating agent has an [`AgentIdentity`](schemas/AgentIdentity.v0.2.json) record: who it is, what domains it is authoritative over, how much its writes and votes weigh. Identity is the substrate everything else builds on — and today there is **no standard for it**.
 
 ### 4. Parliament governance
 When agents disagree or a consequential change is proposed, it goes to a vote. Each agent's vote carries its `quorum_weight`. A proposal passes only when YES-weight meets the quorum threshold. Multi-agent decisions become **auditable**, not emergent and opaque.
@@ -70,7 +70,7 @@ The smallest, most portable piece of the protocol — and the right place to sta
 }
 ```
 
-- **Spec:** [`schemas/AgentIdentity.v0.1.json`](schemas/AgentIdentity.v0.1.json) (JSON Schema, draft 2020-12)
+- **Spec:** [`schemas/AgentIdentity.v0.2.json`](schemas/AgentIdentity.v0.2.json) (JSON Schema, draft 2020-12)
 - **Examples:** [`schemas/examples/`](schemas/examples/)
 
 If you build agents, you can adopt this schema today — independent of the rest of the protocol — to give your agents portable, trust-aware identities. That's the invitation.
@@ -117,7 +117,7 @@ Key capabilities in the reference implementation:
 
 ```bash
 npx ajv-cli validate \
-  -s schemas/AgentIdentity.v0.1.json \
+  -s schemas/AgentIdentity.v0.2.json \
   -d schemas/examples/claude.json \
   --spec=draft2020
 ```

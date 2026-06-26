@@ -6,7 +6,7 @@ This is an early, public proposal for a trust-and-governance layer for multi-age
 
 1. **Tell us where the schema breaks.** If you build agents and the `AgentIdentity` schema doesn't fit your architecture, open an issue describing the mismatch. A field that's missing, a `trust_class` that doesn't map, a constraint that's wrong — these are the highest-signal contributions.
 
-2. **Adopt the schema and report back.** If you use [`AgentIdentity.v0.1`](schemas/AgentIdentity.v0.1.json) in a real project, say so in a "Show & tell" issue. Early adoption signal is what tells us whether the framing is right.
+2. **Adopt the schema and report back.** If you use [`AgentIdentity.v0.2`](schemas/AgentIdentity.v0.2.json) in a real project, say so in a "Show & tell" issue. Early adoption signal is what tells us whether the framing is right.
 
 3. **Challenge the trust model.** The confidence-ceiling and quorum-weight design is opinionated. If you think the precedence order is wrong, or that confidence ceilings are the wrong mechanism, argue it.
 

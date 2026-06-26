@@ -98,5 +98,5 @@ test_resolver.py    # conformance suite (plain python or pytest)
 
 ## Reference
 
-→ [AgentIdentity v0.1](../schemas/AgentIdentity.v0.1.json) · [Belief Envelope v0.1](../schemas/BeliefEnvelope.v0.1.json)
+→ [AgentIdentity v0.2](../schemas/AgentIdentity.v0.2.json) · [Belief Envelope v0.1](../schemas/BeliefEnvelope.v0.1.json)
 → [Memory Bridge Protocol](https://github.com/Alex-Mtz-Dev/memory-bridge-protocol)

@@ -90,4 +90,4 @@ requirements.txt     # Dependencies
 ## Protocol reference
 
 → [Memory Bridge Protocol spec](https://github.com/Alex-Mtz-Dev/memory-bridge-protocol/blob/main/SPEC.md)
-→ [AgentIdentity schema](https://github.com/Alex-Mtz-Dev/memory-bridge-protocol/blob/main/schemas/AgentIdentity.v0.1.json)
+→ [AgentIdentity schema](https://github.com/Alex-Mtz-Dev/memory-bridge-protocol/blob/main/schemas/AgentIdentity.v0.2.json)
