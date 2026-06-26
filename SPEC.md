@@ -8,7 +8,7 @@ A **Memory Bridge** is a shared, persistent store of *beliefs* about a *project*
 
 - **Project** — a namespace. All beliefs and agents belong to exactly one project.
 - **Belief** — a unit of memory: a fact, decision, open loop, or artifact reference, carrying confidence and epistemic status.
-- **Agent** — a participant with an [`AgentIdentity`](schemas/AgentIdentity.v0.1.json).
+- **Agent** — a participant with an [`AgentIdentity`](schemas/AgentIdentity.v0.2.json).
 - **Thread** — an optional sub-namespace within a project for per-session or per-user state.
 
 ## 2. Core operations
@@ -41,7 +41,7 @@ Consequential changes are submitted as **proposals**. Each registered agent may 
 
 ## 5. Versioning
 
-- Schemas are versioned independently (e.g. `AgentIdentity.v0.1`).
+- Schemas are versioned independently (e.g. `AgentIdentity.v0.2`).
 - A breaking change to any schema increments its minor version.
 - This spec document tracks the protocol surface as a whole.
 

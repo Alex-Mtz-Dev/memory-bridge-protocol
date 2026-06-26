@@ -3,7 +3,7 @@
  *
  * All types are compatible with:
  *   schemas/BeliefEnvelope.v0.1.json
- *   schemas/AgentIdentity.v0.1.json
+ *   schemas/AgentIdentity.v0.2.json
  *   schemas/Parliament.v0.3.json
  */
 

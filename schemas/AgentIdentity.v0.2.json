@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://memorybridge.dev/schemas/AgentIdentity.v0.1.json",
+  "$id": "https://memorybridge.dev/schemas/AgentIdentity.v0.2.json",
   "title": "AgentIdentity",
-  "description": "Identity and trust contract for an agent participating in a Memory Bridge. Defines who an agent is, what it is authoritative over, and how much its writes and votes are weighted. The top-level contract is closed (additionalProperties: false) because it carries trust-bearing fields; forward-compatible, non-authoritative metadata belongs in the 'extensions' object, which is never consumed by trust or governance logic.",
+  "description": "Identity and trust contract for an agent participating in a Memory Bridge. Defines who an agent is, what it is authoritative over, and how much its writes and votes are weighted. The top-level contract is closed (additionalProperties: false) because it carries trust-bearing fields; forward-compatible, non-authoritative metadata belongs in the 'extensions' object, which is never consumed by trust or governance logic. v0.2 is a breaking change over v0.1: the contract is now closed and per-trust_class confidence_ceiling maxima are enforced in-schema.",
   "type": "object",
   "additionalProperties": false,
   "required": [

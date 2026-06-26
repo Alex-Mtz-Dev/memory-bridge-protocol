@@ -5,7 +5,7 @@ Run either way:
     python test_agent_identity.py     # plain asserts, prints PASS/FAIL
     pytest test_agent_identity.py     # standard pytest
 
-These pin the *security* invariants of AgentIdentity.v0.1.json so that
+These pin the *security* invariants of AgentIdentity.v0.2.json so that
 "schema-valid" continues to imply "trust-contract intact":
 
   1. The top-level contract is closed — unknown top-level keys are rejected
@@ -17,7 +17,7 @@ These pin the *security* invariants of AgentIdentity.v0.1.json so that
 
 This is a dependency-free checker (no `jsonschema` needed). The per-class
 ceiling map MUST stay in sync with:
-  - the allOf rules in schemas/AgentIdentity.v0.1.json
+  - the allOf rules in schemas/AgentIdentity.v0.2.json
   - BASE_CONFIDENCE_CEILING in integrations/conflict-resolution/types.ts
 """
 

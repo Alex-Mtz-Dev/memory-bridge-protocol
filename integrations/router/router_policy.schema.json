@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://memorybridge.dev/schemas/RouterPolicy.v0.1.json",
+  "title": "RouterPolicy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["min_confidence", "require_domain_authority", "trust_precedence"],
+  "properties": {
+    "min_confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "Beliefs whose clamped confidence is below this floor are not routed." },
+    "require_domain_authority": { "type": "boolean", "description": "If true, only agents authoritative over the task domain are eligible." },
+    "trust_precedence": { "type": "array", "items": { "type": "string", "enum": ["user", "system", "claude", "model", "worker"] }, "description": "Tie-break order, most trusted first." }
+  }
+}
