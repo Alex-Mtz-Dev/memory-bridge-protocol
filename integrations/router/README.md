@@ -35,20 +35,55 @@ consumes the two protocol schemas:
 
 | File | What |
 |---|---|
-| `trust_router.py` | core: registry, `clamp_confidence`, `admit_belief`, `TrustRouter.route` |
-| `server.py` | stdlib HTTP API over the core |
+| `trust_router.py` | Python core: registry, `clamp_confidence`, `admit_belief`, `TrustRouter.route` |
+| `server.py` | stdlib HTTP API over the core (also serves the console) |
+| `console.html` | single-file web console (no build step) |
+| `trust_router.ts` | TypeScript port of the core |
+| `test_trust_router.py` | Python adversarial suite (16 attacks) |
+| `trust_router.test.ts` | TypeScript adversarial suite (15 attacks, `node:test`) |
 | `router_policy.schema.json` | the routing policy contract |
-| `test_trust_router.py` | adversarial test suite (16 attacks) |
 
 ## Run
 
 ```bash
-# core + adversarial tests (no dependencies)
+# Python core + adversarial tests (no dependencies)
 python3 test_trust_router.py        # or: pytest test_trust_router.py
 
-# HTTP API
+# TypeScript core + adversarial tests (Node 22+, native type stripping)
+node --test trust_router.test.ts
+
+# HTTP API + web console
 python3 server.py                   # 127.0.0.1:8787  (PORT/HOST overridable)
+#   then open http://127.0.0.1:8787/ in a browser
 ```
+
+## Web console
+
+`python3 server.py` serves `console.html` at `/`. The console is a live view over
+the API with three panels:
+
+1. **Registry** — shows registered identities; register a new one (rejected if it
+   carries unknown fields or an over-ceiling declaration).
+2. **Belief admission & clamping** — POST a belief and watch the asserted
+   confidence get clamped to the *registered* ceiling, with a visible badge when a
+   spoofed `source_trust_class` is overridden.
+3. **Routing** — rank agents for a domain; toggle "require domain authority" to see
+   the policy enforced server-side.
+
+The server sends permissive CORS headers, so the console also works opened from a
+different origin pointed at the API.
+
+## TypeScript port
+
+`trust_router.ts` mirrors the Python core API (`AgentRegistry`, `clampConfidence`,
+`admitBelief`, `TrustRouter`). One deliberate platform difference: Python rejects an
+integer-typed confidence outright (the `Math.round(0.40) -> 0` coercion signature),
+but JavaScript has a single number type where `0 === 0.0`, so the TS port enforces
+every coercion signature it *can* detect at runtime (booleans, strings, `NaN`,
+`Infinity`, out-of-range) and documents that the float guarantee otherwise lives at
+the `number` type boundary. The `TrustClass` type is imported (type-only) from
+`conflict-resolution/types.ts`; the ceiling map is mirrored locally with a
+keep-in-sync comment, matching the Python port.
 
 ### HTTP endpoints
 
